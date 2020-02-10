@@ -102,11 +102,14 @@ class ChatClient(QWidget):
             elif id == 4:   # send and receive PMs
                 pass
             elif id == 5:   # send and receive public messages
-                pass
+                self.AddMessage( jsonDict["msg"])
             elif id == 6:   # receive screen name assigned buy server.
                 self.SetScreenName( jsonDict["name"] )
         except Exception as e:
             print(e)
+
+    def SendMessage(self):
+        pass
 
     def SetUsersList(self, users):
         # refresh the current users list
@@ -117,6 +120,9 @@ class ChatClient(QWidget):
 
         global screenName
         screenName = uname
+
+    def AddMessage(self, message):
+        self.chatOutput.insertPlainText(message);
 
     def OnSendMessage(self):
         entry = self.userInput.text()
