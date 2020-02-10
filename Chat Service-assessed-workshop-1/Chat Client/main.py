@@ -43,7 +43,7 @@ def backgroundThread():
     while isRunning:
         if not isConnected:
             try:
-                socket_inst.connect(("localhost", 9000))
+                socket_inst.connect(("localhost", 8225))
                 receive_thread = threading.Thread(target=receiveThread, args=(socket_inst,))
                 receive_thread.start()
                 isConnected = True;
@@ -113,9 +113,7 @@ class ChatClient(QWidget):
 
     def SetUserName(self, uname):
         global screenName
-
         screenName = uname
-
 
     def OnSendMessage(self):
         entry = self.userInput.text()
@@ -165,7 +163,7 @@ class ChatClient(QWidget):
 
     def closeEvent(self, event):
         global isRunning
-        isRunning= False
+        isRunning = False
 
         if currentBackgroundThread is not None:
             currentBackgroundThread.join()
