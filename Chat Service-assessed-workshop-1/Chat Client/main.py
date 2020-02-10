@@ -92,26 +92,29 @@ class ChatClient(QWidget):
         except Exception as e:
             print (e)
 
-        # do things with the data
-        id = jsonDict["ID"]
-        if id == 1: # all users
-            self.SetUsersList( jsonDict["users"] )
-        elif id == 2:
-            pass
-        elif id == 4:
-            pass
-        elif id == 5:
-            pass
-        elif id == 6:   # receive screen name assigned buy server.
-            self.SetUsersList( jsonDict["name"] )
-
+        try:
+            # do things with the data
+            id = jsonDict["ID"]
+            if id == 1:     # (inbound only) receive all users list
+                self.SetUsersList( jsonDict["users"] )
+            elif id == 2:   # (outbound only) send screen name to server
+                pass        # Not needed here.
+            elif id == 4:   # send and receive PMs
+                pass
+            elif id == 5:   # send and receive public messages
+                pass
+            elif id == 6:   # receive screen name assigned buy server.
+                self.SetScreenName( jsonDict["name"] )
+        except Exception as e:
+            print(e)
 
     def SetUsersList(self, users):
         # refresh the current users list
         self.clientList.clear()
         self.clientList.addItems( users )
 
-    def SetUserName(self, uname):
+    def SetScreenName(self, uname):
+
         global screenName
         screenName = uname
 
