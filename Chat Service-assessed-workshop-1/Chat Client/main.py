@@ -15,6 +15,27 @@ import queue
 
 currentBackgroundThread = None
 receive_thread = None
+currentChatter = "All"
+
+class GlobalData:
+
+    def __init__(self):
+        self.socket_inst = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.clear = False;
+
+    def NewSocketInst(self):
+
+        if not self.clear:
+            return
+
+        if self.socket_inst is not None:
+            self.socket_inst.close()    # make sure the old socket has been closed!
+
+        self.socket_inst = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+
+globalData = GlobalData()
+globalDataLock = threading.Lock();
 
 isRunning = True
 isConnected = False
@@ -22,36 +43,51 @@ isConnected = False
 dataQueue = queue.Queue()
 screenName = "client-Error";
 
-def receiveThread(socket_):
+def receiveThread(socket):
+    global  isConnected
+    print('Starting ReceiveThread')
+    while isConnected:
 
-    while True:
         try:
-            data = socket_.recv(2)
+            # receive the first 2 bytes containing the data length
+            data = socket.recv(2)
             message_len = int.from_bytes(data, "big")
-            message = socket_.recv(message_len).decode("utf-8")
+            # decode the message and add it to the sync queue ready to be printed in the display :)
+            message = socket.recv(message_len).decode("utf-8")
             dataQueue.put( message, block=True, timeout=None )
+
         except Exception as e:
             print(e, "unable to receive message from server.")
+            isConnected = False
+            globalData.clear = True
+
+        time.sleep(1);
+
+    print('Ending ReceiveThread')
+
 
 def backgroundThread():
     print('Starting backgroundThread')
 
     global isRunning, isConnected, receive_thread
 
-    socket_inst = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
     while isRunning:
         if not isConnected:
             try:
-                socket_inst.connect(("localhost", 8225))
-                receive_thread = threading.Thread(target=receiveThread, args=(socket_inst,))
+                # Lock?
+
+                globalData.NewSocketInst()
+                globalData.socket_inst.connect(("localhost", 8225))
+                isConnected = True
+                receive_thread = threading.Thread(target=receiveThread, args=(globalData.socket_inst,))
                 receive_thread.start()
-                isConnected = True;
             except Exception as e:
                 print(e, "unable to connection to server")
+                time.sleep(1)
         else:
             time.sleep(1)
 
+    print('Ending backgroundThread')
 
 
 class ChatClient(QWidget):
@@ -70,46 +106,60 @@ class ChatClient(QWidget):
 
     def timerEvent(self):
 
-        # get the data from the que and run the required task
-        jsonDataStr = ""
-        jsonDict = {}
+        while not dataQueue.empty():
+            # get the data from the que and run the required task
+            jsonDataStr = ""
+            jsonDict = {}
+
+            try:
+                jsonDataStr = dataQueue.get(block=False, timeout=0.09)
+            except:
+                break;
+
+            print("Got Data", jsonDataStr)
+
+            # if no data was received.
+            if jsonDataStr is None or jsonDataStr == "":
+                return
+
+            # convert the json str into a dict :).
+            try:
+                jsonDict = json.loads( jsonDataStr )
+                print ( jsonDict )
+            except Exception as e:
+                print (e)
+
+            try:
+                # do things with the data
+                id = jsonDict["ID"]
+                if id == 1:     # (inbound only) receive all users list
+                    self.SetUsersList( jsonDict["users"] )
+                elif id == 2:   # (outbound only) send screen name to server
+                    pass        # Not needed here.
+                elif id == 4:   # send and receive PMs
+                    self.AddMessage( jsonDict["msg"] )
+                elif id == 5:   # send and receive public messages
+                    self.AddMessage( jsonDict["msg"])
+                elif id == 6:   # receive screen name assigned buy server.
+                    self.SetScreenName( jsonDict["name"] )
+            except Exception as e:
+                print(e)
+
+    def SendMessage(self, data):
 
         try:
-            jsonDataStr = dataQueue.get(block=True, timeout=0.09)
+            jsonData = json.dumps(data)
         except:
-            pass
-
-        print ("Helloo world")
-
-        # if no data was received.
-        if jsonDataStr is None or jsonDataStr == "":
+            print("Bad data to json..", type(data))
             return
 
-        # convert the json str into a dict :).
-        try:
-            jsonDict = json.loads( jsonDataStr )
-            print ( jsonDict )
-        except Exception as e:
-            print (e)
+        messageLen = len(jsonData).to_bytes(2, "big")
 
         try:
-            # do things with the data
-            id = jsonDict["ID"]
-            if id == 1:     # (inbound only) receive all users list
-                self.SetUsersList( jsonDict["users"] )
-            elif id == 2:   # (outbound only) send screen name to server
-                pass        # Not needed here.
-            elif id == 4:   # send and receive PMs
-                self.AddMessage(jsonDict["msg"], user=jsonDict["target"])
-            elif id == 5:   # send and receive public messages
-                self.AddMessage( jsonDict["msg"])
-            elif id == 6:   # receive screen name assigned buy server.
-                self.SetScreenName( jsonDict["name"] )
+            globalData.socket_inst.send( messageLen )
+            globalData.socket_inst.send( jsonData.encode() )
         except Exception as e:
-            print(e)
-
-    def SendMessage(self):
-        pass
+            print("Unable to send message: ", e)
 
     def SetUsersList(self, users):
         # refresh the current users list
@@ -126,21 +176,34 @@ class ChatClient(QWidget):
         if len(user) > 0:
             message = user +": "+ message
 
-        self.chatOutput.insertPlainText(message);
+        self.chatOutput.insertPlainText(message+"\n");
 
     def OnSendMessage(self):
-        entry = self.userInput.text()
-        print('OnSendMessage: '+entry)
 
+        entry = { "ID": 5, "msg": self.userInput.text() }
+
+        if currentChatter != "All":
+            entry["ID"] = 4
+            entry["target"] = str(currentChatter)
+        else:
+            entry["msg"] = screenName +": "+ entry["msg"]
+
+        self.SendMessage( entry )
         self.userInput.setText('')
 
+        print('OnSendMessage: ', entry)
+
     def OnSetMessageTarget(self):
-        entry = self.clientList.currentRow()
-        print('OnSetMessageTarget: '+str(entry))
+        global currentChatter
+
+        currentChatter = self.clientList.currentItem().text() #Row()
+
+        print('OnSetMessageTarget: '+str(currentChatter))
 
     def OnChangeName(self):
-        entry = self.userName.text()
-        print('OnChangeName: ' + entry)
+        entry = { "ID" : 2, "name" : self.userName.text() }
+        self.SendMessage( entry )
+        print('OnChangeName: ', entry)
 
     def initUI(self):
         self.userInput = QLineEdit(self)
@@ -175,11 +238,26 @@ class ChatClient(QWidget):
         self.show()
 
     def closeEvent(self, event):
-        global isRunning
+        global isRunning, isConnected
+
         isRunning = False
 
         if currentBackgroundThread is not None:
             currentBackgroundThread.join()
+
+        if isConnected:
+            isConnected = False
+
+            globalData.socket_inst.shutdown(socket.SHUT_RDWR)   # close the connection
+
+            # globalData.socket_inst.detach()                     # close the socket, leaving the underlying file descriptor in tac
+                                                                # to prevent any errors from any recv still waiting to receive # does not always work?
+            globalData.socket_inst.close()                      # close the socket once and for all, ready for GC
+            print("All closed");
+
+        if receive_thread is not None:
+            receive_thread.join(2)
+
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
