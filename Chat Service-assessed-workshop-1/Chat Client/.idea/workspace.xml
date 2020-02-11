@@ -1,14 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="45faf8c8-98d0-4d33-86fe-8dc5aa47fa42" name="Default Changelist" comment="added receive pm">
-      <change beforePath="$PROJECT_DIR$/.idea/Python Client.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/Python Client.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
-    </list>
+    <list default="true" id="45faf8c8-98d0-4d33-86fe-8dc5aa47fa42" name="Default Changelist" comment="added name change and recive message ect..." />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -264,7 +257,14 @@
       <option name="project" value="LOCAL" />
       <updated>1581368426028</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="added name change and recive message ect...">
+      <created>1581380732021</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1581380732021</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -292,7 +292,8 @@
     <MESSAGE value="added basic handle incoming messages" />
     <MESSAGE value="added display standered message" />
     <MESSAGE value="added receive pm" />
-    <option name="LAST_COMMIT_MESSAGE" value="added receive pm" />
+    <MESSAGE value="added name change and recive message ect..." />
+    <option name="LAST_COMMIT_MESSAGE" value="added name change and recive message ect..." />
   </component>
   <component name="XDebuggerManager">
     <watches-manager>
