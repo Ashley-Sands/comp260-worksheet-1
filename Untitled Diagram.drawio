@@ -1,4 +1,4 @@
-<mxfile host="app.diagrams.net" modified="2020-03-28T04:11:12.304Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.149 Safari/537.36" etag="7WwrU01IxbrxtLZFd1LF" version="12.9.2" type="github">
+<mxfile host="app.diagrams.net" modified="2020-03-28T04:12:30.107Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.149 Safari/537.36" etag="AW6qg2Uatnu8zgFIBFet" version="12.9.2" type="github">
   <diagram id="r02RHBNnV6Bh3Al3e_Ir" name="Page-1">
     <mxGraphModel dx="2031" dy="1089" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" math="0" shadow="0">
       <root>
@@ -283,7 +283,7 @@
             <mxPoint x="140" y="32" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="Jixa7gBj_222kOkIKWaB-81" value="&lt;b style=&quot;font-size: 30px&quot;&gt;Analize Chat Client UML&lt;/b&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;shadow=0;glass=0;comic=0;startSize=28;" vertex="1" parent="1">
+        <mxCell id="Jixa7gBj_222kOkIKWaB-81" value="&lt;b style=&quot;font-size: 30px&quot;&gt;Chat Client UML&lt;/b&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;shadow=0;glass=0;comic=0;startSize=28;" vertex="1" parent="1">
           <mxGeometry y="60" width="1650" height="20" as="geometry" />
         </mxCell>
       </root>
