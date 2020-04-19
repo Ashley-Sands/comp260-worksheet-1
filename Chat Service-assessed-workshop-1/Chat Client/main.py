@@ -17,6 +17,9 @@ currentBackgroundThread = None
 receive_thread = None
 currentChatter = "All"
 
+host = "localhost"
+port = 8225
+
 class GlobalData:
 
     def __init__(self):
@@ -77,7 +80,7 @@ def backgroundThread():
                 # Lock?
 
                 globalData.NewSocketInst()
-                globalData.socket_inst.connect(("localhost", 8225))
+                globalData.socket_inst.connect((host, port))
                 isConnected = True
                 receive_thread = threading.Thread(target=receiveThread, args=(globalData.socket_inst,))
                 receive_thread.start()
@@ -260,6 +263,16 @@ class ChatClient(QWidget):
 
 
 if __name__ == '__main__':
+
+    if len(sys.argv) > 1:
+        host = sys.argv[1]
+
+        if len(sys.argv) > 2:
+            try:
+                port = int(sys.argv[2])
+            except:
+                pass
+            
     app = QApplication(sys.argv)
     client = ChatClient()
 
